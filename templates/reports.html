@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}List of Reports{% endblock %}
+
+{% block content %}
+    <h2>List of Reports</h2>
+    <ul>
+        {% for report in reports %}
+            <li><a href="{{ url_for('report', report_id=report['id']) }}">{{ report['issue'] }}</a></li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('write_report') }}">Write a Report</a>
+
+{% endblock %}

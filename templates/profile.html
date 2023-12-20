@@ -3,11 +3,23 @@
 {% block title %}Profile{% endblock %}
 
 {% block content %}
-    <h2>Hello, {{ current_user.name }}! You're viewing your profile!</h2>
+    <h2>Hello! You're viewing the profile of {{ current_user.name }}.</h2>
     <p>Email: {{ current_user.email }}</p>
     <p>Interest: {{ current_user.interest }}</p>
     <div>
         <p>Google Profile Picture:</p>
         <img src="{{ current_user.profile_pic }}" alt="Google profile pic">
     </div>
+
+    {% if allow_delete %}
+        <form method="POST" action="{{ url_for('update_interest') }}">
+            <label for="new_interest">New Interest:</label>
+            <input type="text" id="new_interest" name="new_interest" required>
+            <button type="submit">Update Interest</button>
+        </form>
+        <form method="POST" action="{{ url_for('delete_profile') }}">
+            <button type="submit">Delete Profile</button>
+        </form>
+    {% endif %}
+
 {% endblock %}

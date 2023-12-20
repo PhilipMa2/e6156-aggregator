@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Write Report{% endblock %}
+
+{% block content %}
+    <h2>Write Report</h2>
+    <form method="POST" action="{{ url_for('write_report') }}">
+        <label for="issue">Issue:</label>
+        <textarea id="issue" name="issue" rows="1" cols="50" required></textarea>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" cols="50" required></textarea>
+        <button type="submit">Submit Report</button>
+    </form>
+{% endblock %}

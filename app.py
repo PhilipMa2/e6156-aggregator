@@ -232,6 +232,8 @@ def update_report(report_id):
 
 
 
+
+
 @login_manager.unauthorized_handler
 def unauthorized():
     return redirect(url_for('login'))

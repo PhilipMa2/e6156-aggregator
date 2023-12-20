@@ -225,8 +225,9 @@ def delete_report(report_id):
 @app.route('/update_report/<int:report_id>', methods=['POST'], endpoint='update_report')
 @login_required
 def update_report(report_id):
-    updated_title = request.form.get('title')
-    updated_description = request.form.get('description')
+    report = Report.get(report_id)
+    updated_title = request.form.get('title') or report['issue']
+    updated_description = request.form.get('description') or report['description']
     Report.update(report_id, updated_title, updated_description, current_user.id)
 
     return redirect(url_for('view_report', report_id=report_id))

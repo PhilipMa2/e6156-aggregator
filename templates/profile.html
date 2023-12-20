@@ -20,6 +20,10 @@
         <form method="POST" action="{{ url_for('delete_profile') }}">
             <button type="submit">Delete Profile</button>
         </form>
+    {% else %}
+        <form method="POST" action="{{ url_for('create_team', requestee_id=current_user.id) }}">
+            <button type="submit">Create Team</button>
+        </form>
     {% endif %}
 
 {% endblock %}

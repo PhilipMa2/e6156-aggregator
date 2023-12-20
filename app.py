@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, redirect, request, url_for, render_template, jsonify
+from flask import Flask, redirect, request, url_for, render_template, flash
 from flask_login import (
     LoginManager,
     current_user,
@@ -14,6 +14,7 @@ import requests
 
 from user import User
 from report import Report
+from team import Team
 
 # Configuration
 GOOGLE_CLIENT_ID = '215546816295-c186rvc4j3s5cva875mnlbr18uu0ebb7.apps.googleusercontent.com'
@@ -160,7 +161,7 @@ def profile():
         
 
 
-@app.route('/students/<int:student_id>')
+@app.route('/students/<string:student_id>')
 @login_required
 def view_student_profile(student_id):
     student_info = User.get(student_id)
@@ -204,7 +205,7 @@ def write_report():
         return redirect(url_for('reports'))
     return render_template('write_report.html')
 
-@app.route('/report/<int:report_id>', methods=['GET'], endpoint='report')
+@app.route('/report/<int:report_id>', methods=['GET'], endpoint='view_report')
 @login_required
 def view_report(report_id):
     report = Report.get(report_id)
@@ -230,8 +231,16 @@ def update_report(report_id):
 
     return redirect(url_for('view_report', report_id=report_id))
 
-
-
+@app.route('/create_team/<string:requestee_id>', methods=['POST'])
+@login_required
+def create_team(requestee_id):
+    print(current_user.id)
+    print(requestee_id)
+    if Team.create(current_user.id, requestee_id):
+        flash('Team application sent!', 'success')
+    else:
+        flash('Team application failed. Please try again.', 'error')
+    return redirect(url_for('view_student_profile', student_id=requestee_id))
 
 
 @login_manager.unauthorized_handler

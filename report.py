@@ -31,7 +31,7 @@ class Report:
     def delete(report_id, student_id):
         delete_report_url = Report.reports_url + '/' + str(report_id)
         report = {'student_id': student_id}
-        response = requests.post(delete_report_url, json=report)
+        response = requests.delete(delete_report_url, json=report)
 
         if response.status_code == 403:
             print(response.text)
@@ -42,7 +42,7 @@ class Report:
     def update(report_id, issue, description, student_id):
         update_report_url = Report.reports_url + '/' + str(report_id)
         report = {'student_id': student_id, 'issue': issue, 'description': description}
-        response = requests.post(update_report_url, json=report)
+        response = requests.put(update_report_url, json=report)
 
         if response.status_code == 403:
             print(response.text)

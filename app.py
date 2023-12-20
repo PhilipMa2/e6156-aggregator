@@ -1,5 +1,6 @@
 import os
 import json
+import asyncio
 from flask import Flask, redirect, request, url_for, render_template, flash
 from flask_login import (
     LoginManager,
@@ -39,7 +40,7 @@ def load_user(user_id):
     if not user_param:
         return None
     else:
-        return User(user_param['id'], user_param['name'], user_param['email'], user_param['profile_pic'], app.config['SECRET_KEY'], user_param['interest'],)
+        return User.from_json(user_param, app.config['SECRET_KEY'])
 
 @app.route('/')
 def index():
@@ -119,7 +120,7 @@ def callback():
         User.create(unique_id, users_name, users_email, picture)
         user = User(unique_id, users_name, users_email, picture, app.config['SECRET_KEY'])
     else:
-        user = User(unique_id, users_name, users_email, picture, app.config['SECRET_KEY'], user_db['interest'])
+        user = User.from_json(user_db, app.config['SECRET_KEY'])
 
     # Begin user session by logging the user in
     login_user(user)
@@ -149,7 +150,13 @@ def profile():
     #     response = requests.get(api_gateway_url + api_gateway_endpoint, headers=headers)
 
     #     if response.status_code == 200 and response.json().get('principalId') == current_user.id:
-    return render_template('profile.html', current_user=current_user, allow_delete=True)
+    teams_applied = Team.get(current_user.id, 'applied')
+    teams_received = Team.get(current_user.id, 'received')
+    teams_formed = Team.get(current_user.id, 'formed')
+    teams_applied = [Team.from_json(team, app.config['SECRET_KEY']) for team in teams_applied]
+    teams_received = [Team.from_json(team, app.config['SECRET_KEY']) for team in teams_received]
+    teams_formed = [Team.from_json(team, app.config['SECRET_KEY']) for team in teams_formed]
+    return render_template('profile.html', current_user=current_user, allow_delete=True, teams_applied=teams_applied, teams_received=teams_received, teams_formed=teams_formed)
     #     print(current_user.id)
     #     print(response.json())
         
@@ -166,7 +173,7 @@ def profile():
 def view_student_profile(student_id):
     student_info = User.get(student_id)
     if student_info:
-        user = User(student_info['id'], student_info['name'], student_info['email'], student_info['profile_pic'], app.config['SECRET_KEY'], student_info['interest'])
+        user = User.from_json(student_info, app.config['SECRET_KEY'])
         return render_template('profile.html', current_user=user, allow_delete=False)
     else:
         return "Student not found", 404
@@ -235,14 +242,44 @@ def update_report(report_id):
 @app.route('/create_team/<string:requestee_id>', methods=['POST'])
 @login_required
 def create_team(requestee_id):
-    print(current_user.id)
-    print(requestee_id)
     if Team.create(current_user.id, requestee_id):
         flash('Team application sent!', 'success')
     else:
-        flash('Team application failed. Please try again.', 'error')
+        flash('Team application failed. You have already applied.', 'error')
     return redirect(url_for('view_student_profile', student_id=requestee_id))
 
+@app.route('/confirm_team/<int:team_id>', methods=['POST'])
+@login_required
+def confirm_team(team_id):
+    Team.confirm(team_id)
+    return redirect(url_for('profile'))
+
+@app.route('/delete_team/<int:team_id>', methods=['POST'])
+@login_required
+def delete_team(team_id):
+    Team.delete(team_id)
+    return redirect(url_for('profile'))
+
+@app.route('/sync')
+def synchronous_call():
+    user_id = '113490274861503125298'
+    print(User.get(user_id))
+    print(Team.get(user_id, 'applied'))
+    print(Report.get(1))
+    return redirect(url_for('index'))
+
+@app.route('/async')
+async def asynchronous_call():
+    user_id = '113490274861503125298'
+    tasks = [
+        User.get_async(user_id),
+        Team.get_async(user_id, 'applied'),
+        Report.get_async(1)
+    ]
+    for task in asyncio.as_completed(tasks):
+        result = await task
+        print(result)
+    return redirect(url_for('index'))
 
 @login_manager.unauthorized_handler
 def unauthorized():

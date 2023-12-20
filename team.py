@@ -1,15 +1,38 @@
 import requests
+import httpx
+from user import User
 
 class Team:
-    teams_url = 'http://127.0.0.1:3000/team'
-    public_teams_url = 'http://ec2-18-225-11-148.us-east-2.compute.amazonaws.com:5000/team'
+    private_teams_url = 'http://127.0.0.1:3000/team'
+    teams_url = 'http://ec2-18-225-11-148.us-east-2.compute.amazonaws.com:5000/team'
+
+    def __init__(self, team_id, requester, requestee, confirmed):
+        self.id = team_id
+        self.requester = requester
+        self.requestee = requestee
+        self.confirmed = confirmed
 
     @staticmethod
-    def get(student_id):
-        get_team_url = Team.reports_url + '/' + str(student_id)
+    def from_json(team_dict, key):
+        team_id = team_dict.get('team_id')
+        requester = User.from_json(User.get(team_dict.get('requester_id')), key)
+        requestee = User.from_json(User.get(team_dict.get('requestee_id')), key)
+        confirmed = team_dict.get('confirmed')
+        return Team(team_id, requester, requestee, confirmed)
+    
+    @staticmethod
+    async def get_async(student_id, type):
+        get_team_url = Team.teams_url + '/' + type + '/' + str(student_id)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(get_team_url)
+            return response.json()
+
+    @staticmethod
+    def get(student_id, type):
+        get_team_url = Team.teams_url + '/' + type + '/' + str(student_id)
         response = requests.get(get_team_url)
         if response.status_code == 404:
-            return False
+            return []
         return response.json()
 
     @staticmethod

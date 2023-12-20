@@ -1,7 +1,15 @@
 import requests
+import httpx
 
 class Report:
     reports_url = 'http://35.202.215.53:5000/reports'
+
+    @staticmethod
+    async def get_async(report_id):
+        get_report_url = Report.reports_url + '/' + str(report_id)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(get_report_url)
+            return response.json()
 
     @staticmethod
     def get(report_id):

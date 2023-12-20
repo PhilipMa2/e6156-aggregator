@@ -2,8 +2,10 @@ from flask_login import UserMixin
 import requests
 import datetime
 import jwt
+import httpx
 
 class User(UserMixin):
+    private_student_url = "http://127.0.0.1:2000/students/"
     student_url = "http://ec2-3-134-96-223.us-east-2.compute.amazonaws.com:5000/students/"
 
     def __init__(self, id_, name, email, profile_pic, key, interest=None):
@@ -21,6 +23,21 @@ class User(UserMixin):
         self.profile_pic = profile_pic
         self.interest = interest
         self.token = generate_token()
+
+    @staticmethod
+    async def get_async(user_id):
+        async with httpx.AsyncClient() as client:
+            response = await client.get(User.student_url + user_id)
+            return response.json()
+
+    @staticmethod
+    def from_json(user_dict, key):
+        user_id = user_dict.get('id')
+        user_name = user_dict.get('name')
+        user_email = user_dict.get('email')
+        user_interest = user_dict.get('interest')
+        user_profile_pic = user_dict.get('profile_pic')
+        return User(user_id, user_name, user_email, user_profile_pic, key, user_interest)
 
     @staticmethod
     def get(user_id):

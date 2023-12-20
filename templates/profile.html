@@ -17,6 +17,43 @@
             <input type="text" id="new_interest" name="new_interest" required>
             <button type="submit">Update Interest</button>
         </form>
+        <h3>Teams Applied</h3>
+        <ul>
+            {% for team in teams_applied %}
+                <li>{{ team.requestee.name }}</li>
+            {% endfor %}
+        </ul>
+        
+        <!-- Display teams_received -->
+        <h3>Teams Received</h3>
+        <ul>
+            {% for team in teams_received %}
+                <li>
+                    {{ team.requester.name }}
+                    <form method="POST" action="{{ url_for('confirm_team', team_id=team.id) }}">
+                        <button type="submit">Confirm</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+        
+        <!-- Display teams_formed -->
+        <h3>Teams Formed</h3>
+        <ul>
+            {% for team in teams_formed %}
+                <li>
+                    {% if team.requester.name == current_user.name %}
+                        {{ team.requestee.name }}
+                    {% else %}
+                        {{ team.requester.name }}
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('delete_team', team_id=team.id) }}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+               
+            {% endfor %}
+        </ul>
         <form method="POST" action="{{ url_for('delete_profile') }}">
             <button type="submit">Delete Profile</button>
         </form>

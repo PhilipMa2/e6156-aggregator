@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+    <h2>Hello, {{ current_user.name }}! You're viewing your profile!</h2>
+    <p>Email: {{ current_user.email }}</p>
+    <p>Interest: {{ current_user.interest }}</p>
+    <div>
+        <p>Google Profile Picture:</p>
+        <img src="{{ current_user.profile_pic }}" alt="Google profile pic">
+    </div>
+{% endblock %}

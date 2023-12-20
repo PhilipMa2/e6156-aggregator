@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <h2>Login</h2>
+    <a class="button" href="{{ url_for('login') }}">Google Login</a>
+{% endblock %}
+{% set hide_nav = True %}

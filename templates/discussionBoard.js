@@ -66,6 +66,41 @@ function nextPage() {
 function openPostDetails(postId) {
     window.location.href = `postDetails.html?postId=${postId}`;
 }
+document.getElementById('createPostButton').addEventListener('click', function() {
+    document.getElementById('createPostModal').style.display = 'block';
+});
+
+function submitNewPost() {
+    const title = document.getElementById('newPostTitle').value;
+    const content = document.getElementById('newPostContent').value;
+
+    // 这里你需要根据你的 API 调整 post 数据结构
+    const postData = {
+        title: title,
+        content: content,
+        user_id: 1 // 假设用户 ID
+    };
+
+    fetch('http://localhost:8000/posts/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Post created:', data);
+        closeModal();
+        fetchPosts(); // 重新加载帖子
+    })
+    .catch(error => console.error('Error creating post:', error));
+}
+
+function closeModal() {
+    document.getElementById('createPostModal').style.display = 'none';
+}
+
 
 // 初始加载帖子
 fetchPosts('', '', currentPage, postsPerPage);

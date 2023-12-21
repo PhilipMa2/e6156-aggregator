@@ -12,7 +12,7 @@ class User(UserMixin):
         def generate_token():
             payload = {
                 'sub': id_,
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=300)
             }
             token = jwt.encode(payload, key, algorithm='HS256')
             return token

@@ -137,34 +137,36 @@ def logout():
 
 @app.route('/profile')
 def profile():
-    # api_gateway_url = 'https://vbl4o4u9yj.execute-api.us-east-2.amazonaws.com'
+    old_api_gateway_url = 'https://vbl4o4u9yj.execute-api.us-east-2.amazonaws.com/default'
+    second_api_gateway_url = 'https://k0l68uxui3.execute-api.us-east-2.amazonaws.com/default/acadmateAPIGateway'
+    api_gateway_url = 'https://djyyasszl0.execute-api.us-east-2.amazonaws.com/default/acadmateAPIGateway'
     # api_gateway_endpoint = '/profile'
-    # token = current_user.token if hasattr(current_user, 'token') else 'random token'
-    # print(token)
-    # headers = {
-    #     'authorizationToken': f'Bearer {token}',
-    #     'Content-Type': 'application/json'
-    # }
+    token = current_user.token if hasattr(current_user, 'token') else 'random token'
+    print(token)
+    headers = {
+        # 'Authorization': f'Bearer {token}',
+        'Authorization': token
+    }
 
-    # try:
-    #     response = requests.get(api_gateway_url + api_gateway_endpoint, headers=headers)
+    try:
+        response = requests.get(api_gateway_url, headers=headers)
 
-    #     if response.status_code == 200 and response.json().get('principalId') == current_user.id:
-    teams_applied = Team.get(current_user.id, 'applied')
-    teams_received = Team.get(current_user.id, 'received')
-    teams_formed = Team.get(current_user.id, 'formed')
-    teams_applied = [Team.from_json(team, app.config['SECRET_KEY']) for team in teams_applied]
-    teams_received = [Team.from_json(team, app.config['SECRET_KEY']) for team in teams_received]
-    teams_formed = [Team.from_json(team, app.config['SECRET_KEY']) for team in teams_formed]
-    return render_template('profile.html', current_user=current_user, allow_delete=True, teams_applied=teams_applied, teams_received=teams_received, teams_formed=teams_formed)
-    #     print(current_user.id)
-    #     print(response.json())
-        
-    #     print(f"API Gateway authorization failed. Status code: {response.status_code}")
-    #     return redirect(url_for('index'))
-    # except requests.exceptions.RequestException as e:
-    #     print(f"Error during API Gateway authorization: {e}")
-    #     return "Authorization error", 500
+        if response.status_code == 200 and response.json().get('principalId') == current_user.id:
+            teams_applied = Team.get(current_user.id, 'applied')
+            teams_received = Team.get(current_user.id, 'received')
+            teams_formed = Team.get(current_user.id, 'formed')
+            teams_applied = [Team.from_json(team, app.config['SECRET_KEY']) for team in teams_applied]
+            teams_received = [Team.from_json(team, app.config['SECRET_KEY']) for team in teams_received]
+            teams_formed = [Team.from_json(team, app.config['SECRET_KEY']) for team in teams_formed]
+            return render_template('profile.html', current_user=current_user, allow_delete=True, teams_applied=teams_applied, teams_received=teams_received, teams_formed=teams_formed)
+        print(response.json())
+        print(response.status_code)
+        print(current_user.id)
+        print(f"API Gateway authorization failed. Status code: {response.status_code}")
+        return redirect(url_for('index'))
+    except requests.exceptions.RequestException as e:
+        print(f"Error during API Gateway authorization: {e}")
+        return "Authorization error", 500
         
 
 

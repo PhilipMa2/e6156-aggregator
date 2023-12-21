@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Discussion Board</title>
+    <!-- 添加样式 -->
+    <style>
+            #createPostModal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        z-index: 1000;
+        display: none;
+    }
+    /* 覆盖全屏的背景 */
+    #createPostModal:target {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: rgba(0,0,0,0.7);
+    }
+        .post-card {
+            border: 1px solid #ddd;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .post-card:hover {
+            background-color: #f0f0f0;
+        }
+        .post-user, .post-title, .post-content {
+            margin-bottom: 5px;
+        }
+        .post-title {
+            font-weight: bold;
+        }
+        .post-content {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Discussion Board</h1>
+
+    <!-- 搜索表单 -->
+    <form id="searchForm">
+        <input type="text" id="author" placeholder="Search by Author ID" />
+        <input type="text" id="keyword" placeholder="Search by Keyword" />
+        <select id="limitSelect">
+            <option value="5">5 per page</option>
+            <option value="10" selected>10 per page</option>
+            <option value="20">20 per page</option>
+        </select>
+        <button type="submit">Search</button>
+    </form>
+    <!-- 发帖按钮 -->
+    <button id="createPostButton">Create Post</button>
+
+    <!-- 发帖模态框 -->
+    <div id="createPostModal" style="display: none;">
+        <div>
+            <input type="text" id="newPostTitle" placeholder="Post Title" /><br>
+            <textarea id="newPostContent" placeholder="Post Content"></textarea><br>
+            <button onclick="submitNewPost()">Submit Post</button>
+            <button onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- 帖子列表 -->
+    <div id="postsContainer"></div>
+
+    <!-- 分页控制 -->
+    <div id="pagination"></div>
+
+
+    <script src="discussionBoard.js"></script>
+</body>
+</html>

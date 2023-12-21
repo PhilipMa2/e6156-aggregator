@@ -161,7 +161,6 @@ def profile():
             return render_template('profile.html', current_user=current_user, allow_delete=True, teams_applied=teams_applied, teams_received=teams_received, teams_formed=teams_formed)
         print(response.json())
         print(response.status_code)
-        print(current_user.id)
         print(f"API Gateway authorization failed. Status code: {response.status_code}")
         return redirect(url_for('index'))
     except requests.exceptions.RequestException as e:
@@ -227,7 +226,10 @@ def view_report(report_id):
 @app.route('/delete_report/<int:report_id>', methods=['POST'], endpoint='delete_report')
 @login_required
 def delete_report(report_id):
-    Report.delete(report_id, current_user.id)
+    if not Report.delete(report_id, current_user.id):
+        flash('Unauthoroized to delete this report!', 'error')
+    else:
+        flash('Report deleted', 'success')
 
     return redirect(url_for('reports'))
 

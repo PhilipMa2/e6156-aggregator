@@ -43,8 +43,10 @@ class Report:
 
         if response.status_code == 403:
             print(response.text)
+            return False
         else:
             print('Report deleted')
+            return True
 
     @staticmethod
     def update(report_id, issue, description, student_id):

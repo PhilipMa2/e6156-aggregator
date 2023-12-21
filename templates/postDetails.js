@@ -1,10 +1,15 @@
 // 当文档加载完成时执行
 document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
+    console.log("URL Parameters:", urlParams.toString()); // 调试信息
+
     const postId = urlParams.get('postId');
+    console.log("Post ID:", postId); // 调试信息
+
     if (postId) {
         fetchPostDetails(postId);
         fetchComments(postId);
+        setupCommentForm(postId);
     } else {
         console.error('No post ID provided');
     }
@@ -50,3 +55,49 @@ function fetchComments(postId) {
         })
         .catch(error => console.error('Error fetching comments:', error));
 }
+
+// 设置评论表单
+function setupCommentForm(postId) {
+    const form = document.getElementById('commentForm');
+    form.onsubmit = function(event) {
+        event.preventDefault();
+        submitComment(postId);
+    };
+}
+
+// 提交评论
+function submitComment(postId) {
+    const commentContent = document.getElementById('commentContent').value;
+    // 假设以下值是已知的或以某种方式获得的
+    const userId = 12345;
+    const latitude = 0.0;
+    const longitude = 0.0;
+    const location = "String";
+
+    fetch(`http://localhost:8000/comments/`, {  // 确保这个 URL 是正确的
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            content: commentContent,
+            post_id: postId,
+            user_id: userId,
+            latitude: latitude,
+            longitude: longitude,
+            location: location
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(() => {
+        fetchComments(postId); // 重新加载评论
+    })
+    .catch(error => console.error('Error posting comment:', error));
+}
+
+

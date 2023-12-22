@@ -69,7 +69,7 @@
     <h1>Discussion Board</h1>
      <!-- 新增链接到 '我的评论' 和 '我的帖子' -->
      <div id="userLinks">
-        <a href="myCommentsPosts.html">Manage My Posts and Comments</a>
+        <a href="{{ url_for('my_comments_posts') }}">Manage My Posts and Comments</a>
     </div>
     <button id="fetchUser12345PostsButton">Fetch Admin Posts</button>
 
@@ -104,6 +104,6 @@
     <div id="pagination"></div>
 
 
-    <script src="discussionBoard.js"></script>
+    <script src="{{ url_for('static', filename='discussionBoard.js') }}"></script>
 </body>
 </html>

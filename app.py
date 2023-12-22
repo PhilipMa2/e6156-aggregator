@@ -285,6 +285,19 @@ async def asynchronous_call():
         print(result)
     return redirect(url_for('index'))
 
+@app.route('/discussionBoard')
+def discussion_board():
+    return render_template('discussionBoard.html')
+
+@app.route('/myCommentsPosts')
+def my_comments_posts():
+    return render_template('myCommentsPosts.html')
+
+@app.route('/postDetails')
+def post_details():
+    return render_template('postDetails.html')
+
+
 @login_manager.unauthorized_handler
 def unauthorized():
     return redirect(url_for('login'))

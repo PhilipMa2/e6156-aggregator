@@ -293,9 +293,9 @@ def discussion_board():
 def my_comments_posts():
     return render_template('myCommentsPosts.html')
 
-@app.route('/postDetails')
-def post_details():
-    return render_template('postDetails.html')
+@app.route('/postDetails/<int:post_id>')
+def post_details(post_id):
+    return render_template('postDetails.html', post_id=post_id)
 
 
 @login_manager.unauthorized_handler

@@ -1,9 +1,7 @@
-// 当文档加载完成时执行
 document.addEventListener('DOMContentLoaded', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    console.log("URL Parameters:", urlParams.toString()); // 调试信息
+    const pathArray = window.location.pathname.split('/');
+    const postId = pathArray[pathArray.length - 1]; // 假设postId是路径的最后一部分
 
-    const postId = urlParams.get('postId');
     console.log("Post ID:", postId); // 调试信息
 
     if (postId) {
@@ -29,7 +27,7 @@ function fetchPostDetails(postId) {
                     <h2>${data.title}</h2>
                     <p>${data.content}</p>
                     <p>Posted by User ID: ${data.user_id}</p>
-                    <div>likethis ${data.likesnum}</div>
+                    <div>❤️ ${data.likesnum}</div>
                 `;
             } else {
                 console.error('Post not found');
@@ -91,7 +89,7 @@ function updateCommentLikes(commentId, newLikes) {
     .then(data => {
         console.log('Comment updated:', data);
         const likeButton = document.querySelector(`.like-button[data-comment-id="${commentId}"]`);
-        likeButton.innerHTML = `likethis ${data.likesnum}`; // 更新为最新的点赞数
+        likeButton.innerHTML = `❤️ ${data.likesnum}`; // 更新为最新的点赞数
         likeButton.setAttribute('data-likes', data.likesnum);
     })
     .catch(error => console.error('Error updating comment:', error));

@@ -118,7 +118,8 @@ function nextPage() {
     }
 }
 function openPostDetails(postId) {
-    window.location.href = `postDetails.html?postId=${postId}`;
+    window.location.href = `/postDetails/${postId}`;
+    //`postDetails.html?postId=${postId}`;
 }
 
 document.getElementById('createPostButton').addEventListener('click', function() {

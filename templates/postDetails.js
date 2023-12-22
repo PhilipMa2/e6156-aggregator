@@ -15,30 +15,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// 获取并显示帖子详情
+
 function fetchPostDetails(postId) {
-    fetch(`http://localhost:8000/posts/?postID=${postId}`)  // 使用你的 FastAPI 端点
+    fetch(`http://3.136.22.139:8000/posts/${postId}`)  // 使用你的 FastAPI 端点
         .then(response => response.json())
         .then(data => {
-            if (data.posts && data.posts.length > 0) {
-                const post = data.posts[0];
+            console.log("Received data:", data);  // 打印查看接收到的数据
+
+            // 直接检查data对象是否有内容，而不是data.posts
+            if (data && data.id) {  // 假设每个帖子都有唯一的ID
                 const postDetailsDiv = document.getElementById('postDetails');
                 postDetailsDiv.innerHTML = `
-                    <h2>${post.title}</h2>
-                    <p>${post.content}</p>
-                    <p>Posted by User ID: ${post.user_id}</p>
-                    <div>❤️ ${post.likesnum}</div>
+                    <h2>${data.title}</h2>
+                    <p>${data.content}</p>
+                    <p>Posted by User ID: ${data.user_id}</p>
+                    <div>likethis ${data.likesnum}</div>
                 `;
             } else {
                 console.error('Post not found');
+                // 可以在页面上显示错误信息
+                const postDetailsDiv = document.getElementById('postDetails');
+                postDetailsDiv.innerHTML = `<p>Post not found.</p>`;
             }
         })
         .catch(error => console.error('Error fetching post details:', error));
 }
 
-// 获取并显示帖子的评论
+
 function fetchComments(postId) {
-    fetch(`http://localhost:8000/comments/post/${postId}`)  // 使用你的 FastAPI 端点
+    fetch(`http://3.136.22.139:8000/comments/post/${postId}`)  // 使用你的 FastAPI 端点
         .then(response => response.json())
         .then(comments => {
             const commentsDiv = document.getElementById('comments');
@@ -48,12 +53,48 @@ function fetchComments(postId) {
                     <div>
                         <p>User ID: ${comment.user_id}</p>
                         <p>${comment.content}</p>
-                        <div>❤️ ${comment.likesnum}</div>
+                        <div class="like-button" data-comment-id="${comment.id}" data-likes="${comment.likesnum}">❤️ ${comment.likesnum}</div>
                     </div>
                 `;
             });
+            attachLikeEventListeners(); // 为爱心图标添加点击事件
         })
         .catch(error => console.error('Error fetching comments:', error));
+}
+
+// 为每个爱心图标添加点击事件
+function attachLikeEventListeners() {
+    const likeButtons = document.querySelectorAll('.like-button');
+    likeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            if (!this.classList.contains('liked')) { // 如果还没有点赞
+                const commentId = this.getAttribute('data-comment-id');
+                const currentLikes = parseInt(this.getAttribute('data-likes'), 10);
+                updateCommentLikes(commentId, currentLikes + 1);
+                //print(commentId,currentLikes)
+                this.classList.add('liked'); // 标记为已点赞
+            }
+        });
+    });
+}
+
+// 更新评论的点赞数
+function updateCommentLikes(commentId, newLikes) {
+    fetch(`http://3.136.22.139:8000/comments/${commentId}/like`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({likesnum: newLikes})
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Comment updated:', data);
+        const likeButton = document.querySelector(`.like-button[data-comment-id="${commentId}"]`);
+        likeButton.innerHTML = `likethis ${data.likesnum}`; // 更新为最新的点赞数
+        likeButton.setAttribute('data-likes', data.likesnum);
+    })
+    .catch(error => console.error('Error updating comment:', error));
 }
 
 // 设置评论表单
@@ -74,7 +115,7 @@ function submitComment(postId) {
     const longitude = 0.0;
     const location = "String";
 
-    fetch(`http://localhost:8000/comments/`, {  // 确保这个 URL 是正确的
+    fetch(`http://3.136.22.139:8000/comments/`, {  // 确保这个 URL 是正确的
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -99,5 +140,3 @@ function submitComment(postId) {
     })
     .catch(error => console.error('Error posting comment:', error));
 }
-
-
